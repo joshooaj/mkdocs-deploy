@@ -46,12 +46,12 @@ describe('action', () => {
     expect(debugMock).toHaveBeenNthCalledWith(1, 'site_name: mkdocs-deploy')
     expect(setOutputMock).toHaveBeenNthCalledWith(
       1,
-      'site_name',
+      'name',
       expect.stringMatching('mkdocs-deploy')
     )
     expect(setOutputMock).toHaveBeenNthCalledWith(
       2,
-      'site_url',
+      'url',
       expect.stringMatching('https://joshooaj.github.io/mkdocs-deploy/')
     )
     expect(errorMock).not.toHaveBeenCalled()
