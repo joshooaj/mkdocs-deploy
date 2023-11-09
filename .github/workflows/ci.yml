@@ -60,4 +60,6 @@ jobs:
 
       - name: Print Output
         id: output
-        run: echo "${{ steps.test-action.outputs.name }}"
+        run: |
+          echo "${{ steps.test-action.outputs.site_name }}"
+          echo "${{ steps.test-action.outputs.site_url }}"

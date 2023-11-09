@@ -15,7 +15,9 @@ inputs:
   site_name:
     description: 'Site name, used in header, title and drawer.'
     required: false
-    default: ${{ github.repository }}
+  site_url:
+    description: 'Site url. Default value is https://owner.github.io/repository-name/. Ignored when using config.'
+    required: false
   repo_name:
     description: 'Name of the MkDocs theme to use. This value is ignored when a value is provided for "config".'
     required: false
@@ -36,8 +38,10 @@ inputs:
 
 # Define your outputs here.
 outputs:
-  name:
-    description: 'MkDocs site name from inputs.site_name'
+  site_name:
+    description: 'MkDocs site name'
+  site_url:
+    description: 'MkDocs site URL'
 
 runs:
   using: node20
