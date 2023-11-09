@@ -29,14 +29,14 @@ describe('action', () => {
     setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
   })
 
-  it('sets the name output', async () => {
+  it('sets the expected outputs', async () => {
     getInputMock.mockImplementation((name: string): string => {
       switch (name) {
         case 'site_name':
           return 'mkdocs-deploy'
         case 'site_url':
           return 'https://joshooaj.github.io/mkdocs-deploy/'
-      default:
+        default:
           return ''
       }
     })
