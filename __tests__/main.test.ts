@@ -34,7 +34,9 @@ describe('action', () => {
       switch (name) {
         case 'site_name':
           return 'mkdocs-deploy'
-        default:
+        case 'site_url':
+          return 'https://joshooaj.github.io/mkdocs-deploy/'
+      default:
           return ''
       }
     })
