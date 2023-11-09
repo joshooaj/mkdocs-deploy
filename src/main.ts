@@ -8,12 +8,12 @@ import * as github from '@actions/github'
 export async function run(): Promise<void> {
   try {
     let siteName = core.getInput('site_name')
-    if (!siteName) {
+    if (siteName === '') {
       siteName = github.context.repo.repo
     }
 
     let siteUrl = core.getInput('site_url')
-    if (!siteUrl) {
+    if (siteUrl === '') {
       siteUrl = `https://${github.context.repo.owner}.github.io/${github.context.repo.repo}/`
     }
 
