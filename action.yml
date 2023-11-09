@@ -1,6 +1,6 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'mkdocs-deploy'
+description: 'Build and deploy docs to GitHub Pages with MkDocs'
+author: 'joshooaj'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
@@ -9,15 +9,35 @@ branding:
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
-    required: true
-    default: '1000'
+  config:
+    description: 'MkDocs config file name. Usually "mkdocs.yml". If not provided, a simple config file will be generated and used during workflow execution.'
+    required: false
+  site_name:
+    description: 'Site name, used in header, title and drawer.'
+    required: false
+    default: ${{ github.repository }}
+  repo_name:
+    description: 'Name of the MkDocs theme to use. This value is ignored when a value is provided for "config".'
+    required: false
+    default: ${{ github.repository }}
+  docs_dir:
+    description: 'Path to the root of your MkDocs site. Usually "docs/". This value is ignored when a value is provided for "config".'
+    required: false
+    default: 'docs/'
+  remote_branch:
+    description: 'Branch to use when publishing GitHub Pages site.'
+    required: false
+    default: 'gh-pages'
+  theme:
+    description: 'Name of the MkDocs theme to use. This value is ignored when a value is provided for "config".'
+    required: false
+    default: 'material'
+  
 
 # Define your outputs here.
 outputs:
-  time:
-    description: 'Your output description here'
+  name:
+    description: 'MkDocs site name from inputs.site_name'
 
 runs:
   using: node20
