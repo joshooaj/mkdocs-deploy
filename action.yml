@@ -38,9 +38,9 @@ inputs:
 
 # Define your outputs here.
 outputs:
-  site_name:
+  site-name:
     description: 'MkDocs site name'
-  site_url:
+  site-url:
     description: 'MkDocs site URL'
 
 runs:

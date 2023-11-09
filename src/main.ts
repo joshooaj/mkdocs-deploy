@@ -18,8 +18,8 @@ export async function run(): Promise<void> {
     }
 
     core.debug(`site_name: ${core.getInput('site_name')}`)
-    core.setOutput('site_name', siteName)
-    core.setOutput('site_url', siteUrl)
+    core.setOutput('site-name', siteName)
+    core.setOutput('site-url', siteUrl)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
