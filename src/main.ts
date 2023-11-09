@@ -16,7 +16,7 @@ export async function run(): Promise<void> {
     if (!siteUrl) {
       siteUrl = `https://${github.context.repo.owner}.github.io/${github.context.repo.repo}/`
     }
-    
+
     core.debug(`site_name: ${core.getInput('site_name')}`)
     core.setOutput('site_name', siteName)
     core.setOutput('site_url', siteUrl)
