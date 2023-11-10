@@ -3,6 +3,7 @@ import * as github from '@actions/github'
 import yaml from 'js-yaml'
 import fs from 'fs'
 import { exec, ExecOptions } from '@actions/exec'
+import { getProjectsYaml } from './mkdocs-projects'
 
 /**
  * The main function for the action.
@@ -18,7 +19,7 @@ export async function run(): Promise<void> {
     }
     type MkDocsProjects = { projects: Array<MkDocsProject> }
     const themes = (
-      yaml.load(fs.readFileSync('projects.yaml', 'utf8')) as MkDocsProjects
+      yaml.load(getProjectsYaml()) as MkDocsProjects
     ).projects.filter(p => {
       p.labels.includes('theme')
     })
