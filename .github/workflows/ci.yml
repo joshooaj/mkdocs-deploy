@@ -8,6 +8,7 @@ on:
       - 'releases/*'
 
 permissions:
+  contents: write
   pages: write
 
 jobs:
