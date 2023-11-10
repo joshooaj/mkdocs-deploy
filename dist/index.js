@@ -31237,7 +31237,7 @@ async function installMkdocs() {
         silent: true,
         ignoreReturnCode: true
     };
-    const exitCode = await (0, exec_1.exec)('pip', ['install', '-y', 'mkdocs'], options);
+    const exitCode = await (0, exec_1.exec)('pip', ['install', '-v', 'mkdocs'], options);
     core.debug(`installMkdocs exit code: ${exitCode}`);
     return stdout;
 }

@@ -13,7 +13,7 @@ export async function installMkdocs(): Promise<string> {
     ignoreReturnCode: true
   }
 
-  const exitCode = await exec('pip', ['install', '-y', 'mkdocs'], options)
+  const exitCode = await exec('pip', ['install', '-v', 'mkdocs'], options)
   core.debug(`installMkdocs exit code: ${exitCode}`)
   return stdout
 }
