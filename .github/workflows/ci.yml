@@ -61,6 +61,4 @@ jobs:
       - name: Print Output
         id: output
         run: |
-          echo "site-name: ${{ steps.test-action.outputs.name }}";
-          echo "site-url: ${{ steps.test-action.outputs.url }}"
-          echo "info: ${{ steps.test-action.outputs.info }}"
+          echo "mkdocs-config: ${{ steps.test-action.outputs.mkdocs-config }}";

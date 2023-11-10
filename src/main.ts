@@ -1,6 +1,8 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import { installMkdocs } from './pip'
+import yaml from 'js-yaml'
+import fs from 'fs'
+import { exec, ExecOptions } from '@actions/exec'
 
 /**
  * The main function for the action.
@@ -8,27 +10,126 @@ import { installMkdocs } from './pip'
  */
 export async function run(): Promise<void> {
   try {
-    let siteName = core.getInput('site_name')
-    if (!siteName) {
-      siteName = github.context.repo.repo
-      core.debug(`outputs.name set to default value "${siteName}"`)
+    type MkDocsProject = {
+      name: string
+      mkdocs_theme: string
+      pypi_id: string
+      labels: Array<string>
+    }
+    type MkDocsProjects = { projects: Array<MkDocsProject> }
+    const themes = (
+      yaml.load(fs.readFileSync('projects.yaml', 'utf8')) as MkDocsProjects
+    ).projects.filter(p => {
+      p.labels.includes('theme')
+    })
+
+    let config: any = null
+    let configFile = core.getInput('config_file')
+    if (configFile) {
+      config = yaml.load(fs.readFileSync(configFile, 'utf8'))
     } else {
-      core.debug(`outputs.name value from inputs is "${siteName}"`)
+      config = await createConfig()
+      configFile = 'mkdocs.yml'
+      fs.writeFileSync(configFile, yaml.dump(config), 'utf8')
+    }
+    core.debug(`mkdocs.yml:\\n${yaml.dump(config)}`)
+
+    // Install requirements
+    let requirementsFile = core.getInput('requirements_file')
+    if (requirementsFile) {
+      await pipInstallFromFile(requirementsFile)
+    } else {
+      if (!['mkdocs', 'readthedocs'].includes(config.theme.name)) {
+        // Community-maintained list of the most commonly used themes
+        // https://raw.githubusercontent.com/mkdocs/catalog/main/projects.yaml
+        const theme = themes.find(t => t.mkdocs_theme === config.theme.name)
+        if (theme) {
+          await pipInstallPackages([theme.pypi_id])
+        } else {
+          throw `MkDocs theme "${config.theme.name}" not found in catalog: https://github.com/mkdocs/catalog/`
+        }
+      }
     }
 
-    let siteUrl = core.getInput('site_url')
-    if (!siteUrl) {
-      siteUrl = `https://${github.context.repo.owner}.github.io/${github.context.repo.repo}/`
-      core.debug(`outputs.url set to default value "${siteUrl}"`)
-    } else {
-      core.debug(`outputs.url value from inputs is "${siteUrl}"`)
-    }
-
-    core.debug(`site_name: ${core.getInput('site_name')}`)
-    core.setOutput('name', siteName)
-    core.setOutput('url', siteUrl)
-    core.setOutput('info', await installMkdocs())
+    await build(configFile)
+    core.setOutput('mkdocs-config', yaml.dump(config))
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
+}
+
+function createConfig(): any {
+  return {
+    site_name: core.getInput('site_name') ?? github.context.repo.repo,
+    site_description: core.getInput('site_description'),
+    site_url:
+      core.getInput('site_url') ??
+      `https://${github.context.repo.owner}.github.io/${github.context.repo.repo}/`,
+    docs_dir: core
+      .getInput('docs_dir')
+      .replace(/^\/\\/, '')
+      .replace(/\/\\$/, ''),
+    repo_name:
+      core.getInput('repo_name') ??
+      `${github.context.repo.owner}/${github.context.repo.repo}`,
+    repo_url:
+      core.getInput('repo_url') ??
+      `https://${github.context.repo.owner}.github.io/${github.context.repo.repo}/`,
+    remote_branch: core.getInput('remote_branch'),
+    theme: {
+      name: core.getInput('theme')
+    }
+  }
+}
+
+async function pipInstallFromFile(filename: string): Promise<void> {
+  let stdout = ''
+  let stderr = ''
+  const options: ExecOptions = {
+    listeners: {
+      stdout: (data: Buffer) => {
+        stdout += data.toString()
+      },
+      stderr: (data: Buffer) => {
+        stderr += data.toString()
+      }
+    },
+    silent: true,
+    ignoreReturnCode: false
+  }
+  await exec('pip', ['install', '-r', filename], options)
+}
+
+async function pipInstallPackages(packages: Array<string>): Promise<void> {
+  const options: ExecOptions = {
+    listeners: {
+      stdout: (data: Buffer) => {
+        core.info(data.toString())
+      },
+      stderr: (data: Buffer) => {
+        core.warning(data.toString())
+      }
+    },
+    silent: true,
+    ignoreReturnCode: false
+  }
+  let args = ['install'].concat(packages)
+  await exec('pip', args, options)
+}
+
+async function build(configFile: string): Promise<void> {
+  const options: ExecOptions = {
+    listeners: {
+      stdout: (data: Buffer) => {
+        core.info(data.toString())
+      },
+      stderr: (data: Buffer) => {
+        core.warning(data.toString())
+      }
+    },
+    silent: true,
+    ignoreReturnCode: false
+  }
+  let args = ['build', '--config-file', configFile]
+  await exec('mkdocs', args, options)
 }

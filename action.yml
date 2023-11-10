@@ -9,14 +9,14 @@ branding:
 
 # Define your inputs here.
 inputs:
-  config:
+  config_file:
     description: 'MkDocs config file name. Usually "mkdocs.yml". If not provided, a simple config file will be generated and used during workflow execution.'
+    required: false
+  requirements_file:
+    description: 'File name for Python package requirements.'
     required: false
   site_name:
     description: 'Site name, used in header, title and drawer.'
-    required: false
-  logo:
-    description: 'Path to site logo, preferably in SVG format.'
     required: false
   site_url:
     description: 'Site url. Default value is https://owner.github.io/repository-name/. Ignored when using config.'
@@ -28,7 +28,7 @@ inputs:
   docs_dir:
     description: 'Path to the root of your MkDocs site. Usually "docs/". This value is ignored when a value is provided for "config".'
     required: false
-    default: 'docs/'
+    default: 'docs'
   remote_branch:
     description: 'Branch to use when publishing GitHub Pages site.'
     required: false
@@ -41,12 +41,8 @@ inputs:
 
 # Define your outputs here.
 outputs:
-  name:
-    description: 'MkDocs site name'
-  url:
-    description: 'MkDocs site URL'
-  info:
-    description: 'Debug info'
+  mkdocs-config:
+    description: 'mkdocs configuration file'
 
 runs:
   using: node20
