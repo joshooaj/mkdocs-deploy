@@ -1,3 +1,4 @@
+import * as core from '@actions/core'
 import { exec, ExecOptions } from '@actions/exec'
 
 export async function installMkdocs(): Promise<string> {
@@ -13,6 +14,6 @@ export async function installMkdocs(): Promise<string> {
   }
 
   const exitCode = await exec('pip', ['install', '-y', 'mkdocs'], options)
-
+  core.debug(`installMkdocs exit code: ${exitCode}`)
   return stdout
 }
