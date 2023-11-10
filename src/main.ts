@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import { installMkdocs } from './pip'
 
 /**
  * The main function for the action.
@@ -26,6 +27,7 @@ export async function run(): Promise<void> {
     core.debug(`site_name: ${core.getInput('site_name')}`)
     core.setOutput('name', siteName)
     core.setOutput('url', siteUrl)
+    core.setOutput('info', await installMkdocs())
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

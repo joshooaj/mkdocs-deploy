@@ -15,6 +15,9 @@ inputs:
   site_name:
     description: 'Site name, used in header, title and drawer.'
     required: false
+  logo:
+    description: 'Path to site logo, preferably in SVG format.'
+    required: false
   site_url:
     description: 'Site url. Default value is https://owner.github.io/repository-name/. Ignored when using config.'
     required: false
@@ -42,6 +45,8 @@ outputs:
     description: 'MkDocs site name'
   url:
     description: 'MkDocs site URL'
+  info:
+    description: 'Debug info'
 
 runs:
   using: node20
