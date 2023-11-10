@@ -4,13 +4,13 @@ export type MkDocsProject = {
   name: string
   mkdocs_theme: string
   pypi_id: string
-  labels: Array<string>
+  labels: string[]
 }
 
 type MkDocsProjects = {
-  projects: Array<MkDocsProject>
+  projects: MkDocsProject[]
 }
-export function getMkDocsProjects(): Array<MkDocsProject> {
+export function getMkDocsProjects(): MkDocsProject[] {
   // Source: https://github.com/mkdocs/catalog/blob/main/projects.yaml
   const projectsYaml = `
 configuration:

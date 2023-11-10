@@ -35277,9 +35277,7 @@ const mkdocs_projects_1 = __nccwpck_require__(3540);
  */
 async function run() {
     try {
-        core.debug(`Directory contents: ${fs_1.default.readdirSync('.').join(', ')}`);
         const themes = (0, mkdocs_projects_1.getMkDocsProjects)().filter(p => p.labels.includes('theme'));
-        core.debug(`Loaded ${themes.length} themes`);
         let config = null;
         let configFile = core.getInput('config_file');
         if (configFile) {
@@ -35294,7 +35292,7 @@ async function run() {
         }
         core.debug(`Contents of mkdocs.yml:\n${js_yaml_1.default.dump(config)}`);
         // Install requirements
-        let requirementsFile = core.getInput('requirements_file');
+        const requirementsFile = core.getInput('requirements_file');
         if (requirementsFile) {
             core.debug(`Installing dependencies from file "${requirementsFile}"`);
             await pipInstallFromFile(requirementsFile);
@@ -35309,11 +35307,13 @@ async function run() {
                     await pipInstallPackages([theme.pypi_id]);
                 }
                 else {
-                    throw `MkDocs theme "${config.theme.name}" not found in catalog: https://github.com/mkdocs/catalog/`;
+                    throw new Error(`
+          MkDocs theme "${config.theme.name}" not found in catalog: https://github.com/mkdocs/catalog/
+          `);
                 }
             }
         }
-        await build(configFile);
+        await deploy(configFile);
         core.setOutput('mkdocs-config', js_yaml_1.default.dump(config));
     }
     catch (error) {
@@ -35370,10 +35370,10 @@ async function pipInstallPackages(packages) {
         silent: false,
         ignoreReturnCode: false
     };
-    let args = ['install'].concat(packages);
+    const args = ['install'].concat(packages);
     await (0, exec_1.exec)('pip', args, options);
 }
-async function build(configFile) {
+async function deploy(configFile) {
     const options = {
         listeners: {
             stdout: (data) => {
@@ -35386,7 +35386,7 @@ async function build(configFile) {
         silent: false,
         ignoreReturnCode: false
     };
-    let args = ['build', '--config-file', configFile];
+    const args = ['gh-deploy', '--config-file', configFile];
     await (0, exec_1.exec)('mkdocs', args, options);
 }
 

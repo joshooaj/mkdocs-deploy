@@ -3,7 +3,7 @@ import * as github from '@actions/github'
 import yaml from 'js-yaml'
 import fs from 'fs'
 import { exec, ExecOptions } from '@actions/exec'
-import { MkDocsProject, getMkDocsProjects } from './mkdocs-projects'
+import { getMkDocsProjects } from './mkdocs-projects'
 
 /**
  * The main function for the action.
@@ -11,10 +11,7 @@ import { MkDocsProject, getMkDocsProjects } from './mkdocs-projects'
  */
 export async function run(): Promise<void> {
   try {
-    core.debug(`Directory contents: ${fs.readdirSync('.').join(', ')}`)
-
     const themes = getMkDocsProjects().filter(p => p.labels.includes('theme'))
-    core.debug(`Loaded ${themes.length} themes`)
 
     let config: any = null
     let configFile = core.getInput('config_file')
@@ -30,7 +27,7 @@ export async function run(): Promise<void> {
     core.debug(`Contents of mkdocs.yml:\n${yaml.dump(config)}`)
 
     // Install requirements
-    let requirementsFile = core.getInput('requirements_file')
+    const requirementsFile = core.getInput('requirements_file')
     if (requirementsFile) {
       core.debug(`Installing dependencies from file "${requirementsFile}"`)
       await pipInstallFromFile(requirementsFile)
@@ -45,12 +42,14 @@ export async function run(): Promise<void> {
           )
           await pipInstallPackages([theme.pypi_id])
         } else {
-          throw `MkDocs theme "${config.theme.name}" not found in catalog: https://github.com/mkdocs/catalog/`
+          throw new Error(`
+          MkDocs theme "${config.theme.name}" not found in catalog: https://github.com/mkdocs/catalog/
+          `)
         }
       }
     }
 
-    await build(configFile)
+    await deploy(configFile)
     core.setOutput('mkdocs-config', yaml.dump(config))
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
@@ -97,7 +96,7 @@ async function pipInstallFromFile(filename: string): Promise<void> {
   await exec('pip', ['install', '-r', filename], options)
 }
 
-async function pipInstallPackages(packages: Array<string>): Promise<void> {
+async function pipInstallPackages(packages: string[]): Promise<void> {
   const options: ExecOptions = {
     listeners: {
       stdout: (data: Buffer) => {
@@ -110,11 +109,11 @@ async function pipInstallPackages(packages: Array<string>): Promise<void> {
     silent: false,
     ignoreReturnCode: false
   }
-  let args = ['install'].concat(packages)
+  const args = ['install'].concat(packages)
   await exec('pip', args, options)
 }
 
-async function build(configFile: string): Promise<void> {
+async function deploy(configFile: string): Promise<void> {
   const options: ExecOptions = {
     listeners: {
       stdout: (data: Buffer) => {
@@ -127,6 +126,6 @@ async function build(configFile: string): Promise<void> {
     silent: false,
     ignoreReturnCode: false
   }
-  let args = ['build', '--config-file', configFile]
+  const args = ['gh-deploy', '--config-file', configFile]
   await exec('mkdocs', args, options)
 }
