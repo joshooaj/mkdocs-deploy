@@ -1,6 +1,18 @@
-export function getProjectsYaml(): string {
-    // Source: https://github.com/mkdocs/catalog/blob/main/projects.yaml
-    return `
+import yaml from 'js-yaml'
+
+export type MkDocsProject = {
+  name: string
+  mkdocs_theme: string
+  pypi_id: string
+  labels: Array<string>
+}
+
+type MkDocsProjects = {
+  projects: Array<MkDocsProject>
+}
+export function getMkDocsProjects(): Array<MkDocsProject> {
+  // Source: https://github.com/mkdocs/catalog/blob/main/projects.yaml
+  const projectsYaml = `
 configuration:
   markdown_header_file: "config/header.md"
   markdown_footer_file: "config/footer.md"
@@ -1532,4 +1544,5 @@ projects:
   labels: []
   category: other
 `
+  return (yaml.load(projectsYaml) as MkDocsProjects).projects
 }

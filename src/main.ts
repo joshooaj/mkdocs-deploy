@@ -3,7 +3,7 @@ import * as github from '@actions/github'
 import yaml from 'js-yaml'
 import fs from 'fs'
 import { exec, ExecOptions } from '@actions/exec'
-import { getProjectsYaml } from './mkdocs-projects'
+import { MkDocsProject, getMkDocsProjects } from './mkdocs-projects'
 
 /**
  * The main function for the action.
@@ -11,33 +11,28 @@ import { getProjectsYaml } from './mkdocs-projects'
  */
 export async function run(): Promise<void> {
   try {
-    type MkDocsProject = {
-      name: string
-      mkdocs_theme: string
-      pypi_id: string
-      labels: Array<string>
-    }
-    type MkDocsProjects = { projects: Array<MkDocsProject> }
-    const themes = (
-      yaml.load(getProjectsYaml()) as MkDocsProjects
-    ).projects.filter(p => {
-      p.labels.includes('theme')
-    })
+    core.debug(`Directory contents: ${fs.readdirSync('.').join(', ')}`)
+
+    const themes = getMkDocsProjects().filter(p => p.labels.includes('theme'))
+    core.debug(`Loaded ${themes.length} themes`)
 
     let config: any = null
     let configFile = core.getInput('config_file')
     if (configFile) {
+      core.debug(`Loading mkdocs configuration file: ${configFile}`)
       config = yaml.load(fs.readFileSync(configFile, 'utf8'))
     } else {
       config = await createConfig()
       configFile = 'mkdocs.yml'
+      core.debug(`Saving generated mkdocs config file to ${configFile}`)
       fs.writeFileSync(configFile, yaml.dump(config), 'utf8')
     }
-    core.debug(`mkdocs.yml:\\n${yaml.dump(config)}`)
+    core.debug(`Contents of mkdocs.yml:\n${yaml.dump(config)}`)
 
     // Install requirements
     let requirementsFile = core.getInput('requirements_file')
     if (requirementsFile) {
+      core.debug(`Installing dependencies from file "${requirementsFile}"`)
       await pipInstallFromFile(requirementsFile)
     } else {
       if (!['mkdocs', 'readthedocs'].includes(config.theme.name)) {
@@ -45,6 +40,9 @@ export async function run(): Promise<void> {
         // https://raw.githubusercontent.com/mkdocs/catalog/main/projects.yaml
         const theme = themes.find(t => t.mkdocs_theme === config.theme.name)
         if (theme) {
+          core.debug(
+            `Installing theme "${theme.mkdocs_theme}" with pypi id "${theme.pypi_id}"`
+          )
           await pipInstallPackages([theme.pypi_id])
         } else {
           throw `MkDocs theme "${config.theme.name}" not found in catalog: https://github.com/mkdocs/catalog/`
@@ -61,20 +59,20 @@ export async function run(): Promise<void> {
 
 function createConfig(): any {
   return {
-    site_name: core.getInput('site_name') ?? github.context.repo.repo,
+    site_name: core.getInput('site_name') || github.context.repo.repo,
     site_description: core.getInput('site_description'),
     site_url:
-      core.getInput('site_url') ??
+      core.getInput('site_url') ||
       `https://${github.context.repo.owner}.github.io/${github.context.repo.repo}/`,
     docs_dir: core
       .getInput('docs_dir')
       .replace(/^\/\\/, '')
       .replace(/\/\\$/, ''),
     repo_name:
-      core.getInput('repo_name') ??
+      core.getInput('repo_name') ||
       `${github.context.repo.owner}/${github.context.repo.repo}`,
     repo_url:
-      core.getInput('repo_url') ??
+      core.getInput('repo_url') ||
       `https://${github.context.repo.owner}.github.io/${github.context.repo.repo}/`,
     remote_branch: core.getInput('remote_branch'),
     theme: {
@@ -84,18 +82,16 @@ function createConfig(): any {
 }
 
 async function pipInstallFromFile(filename: string): Promise<void> {
-  let stdout = ''
-  let stderr = ''
   const options: ExecOptions = {
     listeners: {
       stdout: (data: Buffer) => {
-        stdout += data.toString()
+        core.info(data.toString())
       },
       stderr: (data: Buffer) => {
-        stderr += data.toString()
+        core.warning(data.toString())
       }
     },
-    silent: true,
+    silent: false,
     ignoreReturnCode: false
   }
   await exec('pip', ['install', '-r', filename], options)
@@ -111,7 +107,7 @@ async function pipInstallPackages(packages: Array<string>): Promise<void> {
         core.warning(data.toString())
       }
     },
-    silent: true,
+    silent: false,
     ignoreReturnCode: false
   }
   let args = ['install'].concat(packages)
@@ -128,7 +124,7 @@ async function build(configFile: string): Promise<void> {
         core.warning(data.toString())
       }
     },
-    silent: true,
+    silent: false,
     ignoreReturnCode: false
   }
   let args = ['build', '--config-file', configFile]

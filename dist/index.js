@@ -35277,23 +35277,26 @@ const mkdocs_projects_1 = __nccwpck_require__(3540);
  */
 async function run() {
     try {
-        const themes = js_yaml_1.default.load((0, mkdocs_projects_1.getProjectsYaml)()).projects.filter(p => {
-            p.labels.includes('theme');
-        });
+        core.debug(`Directory contents: ${fs_1.default.readdirSync('.').join(', ')}`);
+        const themes = (0, mkdocs_projects_1.getMkDocsProjects)().filter(p => p.labels.includes('theme'));
+        core.debug(`Loaded ${themes.length} themes`);
         let config = null;
         let configFile = core.getInput('config_file');
         if (configFile) {
+            core.debug(`Loading mkdocs configuration file: ${configFile}`);
             config = js_yaml_1.default.load(fs_1.default.readFileSync(configFile, 'utf8'));
         }
         else {
             config = await createConfig();
             configFile = 'mkdocs.yml';
+            core.debug(`Saving generated mkdocs config file to ${configFile}`);
             fs_1.default.writeFileSync(configFile, js_yaml_1.default.dump(config), 'utf8');
         }
-        core.debug(`mkdocs.yml:\\n${js_yaml_1.default.dump(config)}`);
+        core.debug(`Contents of mkdocs.yml:\n${js_yaml_1.default.dump(config)}`);
         // Install requirements
         let requirementsFile = core.getInput('requirements_file');
         if (requirementsFile) {
+            core.debug(`Installing dependencies from file "${requirementsFile}"`);
             await pipInstallFromFile(requirementsFile);
         }
         else {
@@ -35302,6 +35305,7 @@ async function run() {
                 // https://raw.githubusercontent.com/mkdocs/catalog/main/projects.yaml
                 const theme = themes.find(t => t.mkdocs_theme === config.theme.name);
                 if (theme) {
+                    core.debug(`Installing theme "${theme.mkdocs_theme}" with pypi id "${theme.pypi_id}"`);
                     await pipInstallPackages([theme.pypi_id]);
                 }
                 else {
@@ -35320,17 +35324,17 @@ async function run() {
 exports.run = run;
 function createConfig() {
     return {
-        site_name: core.getInput('site_name') ?? github.context.repo.repo,
+        site_name: core.getInput('site_name') || github.context.repo.repo,
         site_description: core.getInput('site_description'),
-        site_url: core.getInput('site_url') ??
+        site_url: core.getInput('site_url') ||
             `https://${github.context.repo.owner}.github.io/${github.context.repo.repo}/`,
         docs_dir: core
             .getInput('docs_dir')
             .replace(/^\/\\/, '')
             .replace(/\/\\$/, ''),
-        repo_name: core.getInput('repo_name') ??
+        repo_name: core.getInput('repo_name') ||
             `${github.context.repo.owner}/${github.context.repo.repo}`,
-        repo_url: core.getInput('repo_url') ??
+        repo_url: core.getInput('repo_url') ||
             `https://${github.context.repo.owner}.github.io/${github.context.repo.repo}/`,
         remote_branch: core.getInput('remote_branch'),
         theme: {
@@ -35339,18 +35343,16 @@ function createConfig() {
     };
 }
 async function pipInstallFromFile(filename) {
-    let stdout = '';
-    let stderr = '';
     const options = {
         listeners: {
             stdout: (data) => {
-                stdout += data.toString();
+                core.info(data.toString());
             },
             stderr: (data) => {
-                stderr += data.toString();
+                core.warning(data.toString());
             }
         },
-        silent: true,
+        silent: false,
         ignoreReturnCode: false
     };
     await (0, exec_1.exec)('pip', ['install', '-r', filename], options);
@@ -35365,7 +35367,7 @@ async function pipInstallPackages(packages) {
                 core.warning(data.toString());
             }
         },
-        silent: true,
+        silent: false,
         ignoreReturnCode: false
     };
     let args = ['install'].concat(packages);
@@ -35381,7 +35383,7 @@ async function build(configFile) {
                 core.warning(data.toString());
             }
         },
-        silent: true,
+        silent: false,
         ignoreReturnCode: false
     };
     let args = ['build', '--config-file', configFile];
@@ -35392,15 +35394,19 @@ async function build(configFile) {
 /***/ }),
 
 /***/ 3540:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getProjectsYaml = void 0;
-function getProjectsYaml() {
+exports.getMkDocsProjects = void 0;
+const js_yaml_1 = __importDefault(__nccwpck_require__(1917));
+function getMkDocsProjects() {
     // Source: https://github.com/mkdocs/catalog/blob/main/projects.yaml
-    return `
+    const projectsYaml = `
 configuration:
   markdown_header_file: "config/header.md"
   markdown_footer_file: "config/footer.md"
@@ -36932,8 +36938,9 @@ projects:
   labels: []
   category: other
 `;
+    return js_yaml_1.default.load(projectsYaml).projects;
 }
-exports.getProjectsYaml = getProjectsYaml;
+exports.getMkDocsProjects = getMkDocsProjects;
 
 
 /***/ }),
