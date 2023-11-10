@@ -45,7 +45,15 @@ describe('action', () => {
     expect(runMock).toHaveReturned()
 
     // Verify that all of the core library functions were called correctly
-    expect(debugMock).toHaveBeenNthCalledWith(1, 'site_name: mkdocs-deploy')
+    expect(debugMock).toHaveBeenNthCalledWith(
+      1,
+      'outputs.name value from inputs is "mkdocs-deploy"'
+    )
+    expect(debugMock).toHaveBeenNthCalledWith(
+      2,
+      'outputs.url value from inputs is "https://joshooaj.github.io/mkdocs-deploy/"'
+    )
+    expect(debugMock).toHaveBeenNthCalledWith(3, 'site_name: mkdocs-deploy')
     expect(setOutputMock).toHaveBeenNthCalledWith(
       1,
       'name',
