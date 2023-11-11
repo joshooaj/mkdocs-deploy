@@ -1,8 +1,7 @@
 # mkdocs-deploy
-[![GitHub Super-Linter](https://github.com/actions/typescript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
-![CI](https://github.com/actions/typescript-action/actions/workflows/ci.yml/badge.svg)
-[![Check dist/](https://github.com/actions/typescript-action/actions/workflows/check-dist.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/check-dist.yml)
-[![CodeQL](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml)
+[![Continuous Integration](https://github.com/joshooaj/mkdocs-deploy/actions/workflows/ci.yml/badge.svg)](https://github.com/joshooaj/mkdocs-deploy/actions/workflows/ci.yml)
+[![Check dist/](https://github.com/joshooaj/mkdocs-deploy/actions/workflows/check-dist.yml/badge.svg)](https://github.com/joshooaj/mkdocs-deploy/actions/workflows/check-dist.yml)
+[![CodeQL](https://github.com/joshooaj/mkdocs-deploy/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/joshooaj/mkdocs-deploy/actions/workflows/codeql-analysis.yml)
 
 This action converts your markdown content to a static website and publishes it
 to GitHub Pages using [mkdocs](https://www.mkdocs.org/) by:
