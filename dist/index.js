@@ -35323,7 +35323,7 @@ const tags = [
         }
     })
 ];
-const YAML_SCHEMA = yaml.DEFAULT_SCHEMA.extend(tags);
+const LAZY_SCHEMA = yaml.DEFAULT_SCHEMA.extend(tags);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -35336,17 +35336,16 @@ async function run() {
         if (configFile) {
             core.debug(`Loading mkdocs configuration file: ${configFile}`);
             config = yaml.load(fs_1.default.readFileSync(configFile, 'utf8'), {
-                schema: YAML_SCHEMA
+                schema: LAZY_SCHEMA
             });
-            yaml.load;
         }
         else {
             config = await createConfig();
             configFile = 'mkdocs.yml';
             core.debug(`Saving generated mkdocs config file to ${configFile}`);
-            fs_1.default.writeFileSync(configFile, yaml.dump(config), 'utf8');
+            fs_1.default.writeFileSync(configFile, yaml.dump(config, { schema: LAZY_SCHEMA }), 'utf8');
         }
-        core.debug(`Contents of mkdocs.yml:\n${yaml.dump(config)}`);
+        core.debug(`Contents of mkdocs.yml:\n${yaml.dump(config, { schema: LAZY_SCHEMA })}`);
         // Install requirements
         await pipInstallPackages(['mkdocs']);
         const requirementsFile = core.getInput('requirements_file');

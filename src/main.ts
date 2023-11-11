@@ -59,7 +59,7 @@ const tags = [
   })
 ]
 
-const YAML_SCHEMA = yaml.DEFAULT_SCHEMA.extend(tags)
+const LAZY_SCHEMA = yaml.DEFAULT_SCHEMA.extend(tags)
 
 /**
  * The main function for the action.
@@ -73,18 +73,22 @@ export async function run(): Promise<void> {
     let configFile = core.getInput('config_file')
     if (configFile) {
       core.debug(`Loading mkdocs configuration file: ${configFile}`)
-
       config = yaml.load(fs.readFileSync(configFile, 'utf8'), {
-        schema: YAML_SCHEMA
+        schema: LAZY_SCHEMA
       })
-      yaml.load
     } else {
       config = await createConfig()
       configFile = 'mkdocs.yml'
       core.debug(`Saving generated mkdocs config file to ${configFile}`)
-      fs.writeFileSync(configFile, yaml.dump(config), 'utf8')
+      fs.writeFileSync(
+        configFile,
+        yaml.dump(config, { schema: LAZY_SCHEMA }),
+        'utf8'
+      )
     }
-    core.debug(`Contents of mkdocs.yml:\n${yaml.dump(config)}`)
+    core.debug(
+      `Contents of mkdocs.yml:\n${yaml.dump(config, { schema: LAZY_SCHEMA })}`
+    )
 
     // Install requirements
     await pipInstallPackages(['mkdocs'])
