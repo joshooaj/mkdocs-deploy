@@ -35267,7 +35267,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-const js_yaml_1 = __importDefault(__nccwpck_require__(1917));
+const yaml = __importStar(__nccwpck_require__(1917));
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 const exec_1 = __nccwpck_require__(1514);
 const mkdocs_projects_1 = __nccwpck_require__(3540);
@@ -35282,15 +35282,18 @@ async function run() {
         let configFile = core.getInput('config_file');
         if (configFile) {
             core.debug(`Loading mkdocs configuration file: ${configFile}`);
-            config = js_yaml_1.default.load(fs_1.default.readFileSync(configFile, 'utf8'));
+            config = yaml.load(fs_1.default.readFileSync(configFile, 'utf8'), {
+                schema: yaml.FAILSAFE_SCHEMA
+            });
+            yaml.load;
         }
         else {
             config = await createConfig();
             configFile = 'mkdocs.yml';
             core.debug(`Saving generated mkdocs config file to ${configFile}`);
-            fs_1.default.writeFileSync(configFile, js_yaml_1.default.dump(config), 'utf8');
+            fs_1.default.writeFileSync(configFile, yaml.dump(config), 'utf8');
         }
-        core.debug(`Contents of mkdocs.yml:\n${js_yaml_1.default.dump(config)}`);
+        core.debug(`Contents of mkdocs.yml:\n${yaml.dump(config)}`);
         // Install requirements
         await pipInstallPackages(['mkdocs']);
         const requirementsFile = core.getInput('requirements_file');

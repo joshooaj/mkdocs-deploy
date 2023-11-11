@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import yaml from 'js-yaml'
+import * as yaml from 'js-yaml'
 import fs from 'fs'
 import { exec, ExecOptions } from '@actions/exec'
 import { getMkDocsProjects } from './mkdocs-projects'
@@ -17,7 +17,11 @@ export async function run(): Promise<void> {
     let configFile = core.getInput('config_file')
     if (configFile) {
       core.debug(`Loading mkdocs configuration file: ${configFile}`)
-      config = yaml.load(fs.readFileSync(configFile, 'utf8'))
+
+      config = yaml.load(fs.readFileSync(configFile, 'utf8'), {
+        schema: yaml.FAILSAFE_SCHEMA
+      })
+      yaml.load
     } else {
       config = await createConfig()
       configFile = 'mkdocs.yml'
