@@ -5,6 +5,62 @@ import fs from 'fs'
 import { exec, ExecOptions } from '@actions/exec'
 import { getMkDocsProjects } from './mkdocs-projects'
 
+class CustomTag {
+  type: string | undefined
+  data: string
+  constructor(type: string | undefined, data: string) {
+    this.type = type
+    this.data = data
+  }
+}
+
+const tags = [
+  new yaml.Type('!', {
+    kind: 'scalar',
+    multi: true,
+    representName: (obj: any) => {
+      obj.type
+    },
+    represent: (obj: any) => {
+      obj.data
+    },
+    instanceOf: CustomTag,
+    construct: (data, type) => {
+      return new CustomTag(type, data)
+    }
+  }),
+  new yaml.Type('!', {
+    kind: 'sequence',
+    multi: true,
+    representName: (obj: any) => {
+      obj.type
+    },
+    represent: (obj: any) => {
+      obj.data
+    },
+    instanceOf: CustomTag,
+    construct: (data, type) => {
+      return new CustomTag(type, data)
+    }
+  }),
+  new yaml.Type('!', {
+    kind: 'mapping',
+    multi: true,
+    representName: (obj: any) => {
+      obj.type
+    },
+    represent: (obj: any) => {
+      obj.data
+    },
+    instanceOf: CustomTag,
+    construct: (data, type) => {
+      return new CustomTag(type, data)
+    }
+  })
+]
+
+const YAML_SCHEMA = yaml.DEFAULT_SCHEMA.extend(tags)
+
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -19,7 +75,7 @@ export async function run(): Promise<void> {
       core.debug(`Loading mkdocs configuration file: ${configFile}`)
 
       config = yaml.load(fs.readFileSync(configFile, 'utf8'), {
-        schema: yaml.FAILSAFE_SCHEMA
+        schema: YAML_SCHEMA
       })
       yaml.load
     } else {
