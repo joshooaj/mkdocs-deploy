@@ -24,7 +24,6 @@ inputs:
   repo_name:
     description: 'Name of the MkDocs theme to use. This value is ignored when a value is provided for "config".'
     required: false
-    default: ${{ github.repository }}
   docs_dir:
     description: 'Path to the root of your MkDocs site. Usually "docs/". This value is ignored when a value is provided for "config".'
     required: false
@@ -37,6 +36,9 @@ inputs:
     description: 'Name of the MkDocs theme to use. This value is ignored when a value is provided for "config".'
     required: false
     default: 'material'
+  deploy:
+    description: 'Set to "false" if you want to execute "mkdocs build" instead of "mkdocs gh-deploy". You might do this to validate the site builds successfully, or when building the site and publishing it somewhere other than GitHub Pages.'
+    default: true
   
 
 # Define your outputs here.

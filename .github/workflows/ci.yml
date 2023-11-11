@@ -7,10 +7,6 @@ on:
       - main
       - 'releases/*'
 
-permissions:
-  contents: write
-  pages: write
-
 jobs:
   test-typescript:
     name: TypeScript Tests
@@ -44,22 +40,20 @@ jobs:
         id: npm-ci-test
         run: npm run ci-test
 
-  test-action:
-    name: GitHub Actions Test
-    runs-on: ubuntu-latest
-
+  mkdocs-build:
+    name: Test mkdocs build
+    needs: test-typescript
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        config_file: ['mkdocs.yml', '']
     steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
-
-      - name: Test Local Action
-        id: test-action
+      - uses: actions/checkout@v4
+      - name: Run action on ${{ matrix.os }}
         uses: ./
         with:
-          site_name: mkdocs-deploy
-
-      - name: Print Output
-        id: output
-        run: |
-          echo "mkdocs-config: ${{ steps.test-action.outputs.mkdocs-config }}";
+          config_file: ${{ matrix.config_file }}
+          requirements_file: requirements.txt
+          deploy: false

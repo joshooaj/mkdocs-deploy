@@ -4,6 +4,7 @@ import yaml from 'js-yaml'
 import fs from 'fs'
 import { exec, ExecOptions } from '@actions/exec'
 import { getMkDocsProjects } from './mkdocs-projects'
+import { builtinModules } from 'module'
 
 /**
  * The main function for the action.
@@ -27,6 +28,7 @@ export async function run(): Promise<void> {
     core.debug(`Contents of mkdocs.yml:\n${yaml.dump(config)}`)
 
     // Install requirements
+    await pipInstallPackages('mkdocs')
     const requirementsFile = core.getInput('requirements_file')
     if (requirementsFile) {
       core.debug(`Installing dependencies from file "${requirementsFile}"`)
@@ -49,8 +51,11 @@ export async function run(): Promise<void> {
       }
     }
 
-    await deploy(configFile)
-    core.setOutput('mkdocs-config', yaml.dump(config))
+    if (core.getInput('deploy').toLowerCase() === 'true') {
+      await deploy(configFile)
+    } else {
+      await build(configFile)
+    }
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
@@ -127,5 +132,22 @@ async function deploy(configFile: string): Promise<void> {
     ignoreReturnCode: false
   }
   const args = ['gh-deploy', '--config-file', configFile]
+  await exec('mkdocs', args, options)
+}
+
+async function build(configFile: string): Promise<void> {
+  const options: ExecOptions = {
+    listeners: {
+      stdout: (data: Buffer) => {
+        core.info(data.toString())
+      },
+      stderr: (data: Buffer) => {
+        core.warning(data.toString())
+      }
+    },
+    silent: false,
+    ignoreReturnCode: false
+  }
+  const args = ['build', '--config-file', configFile]
   await exec('mkdocs', args, options)
 }

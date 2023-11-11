@@ -1,0 +1,29 @@
+name: Publish to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+        - mkdocs.yml
+        - requirements.yml
+        - docs/**
+        - overrides/**
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  publish-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+
+      - name: Publish to GitHub Pages
+        uses: ./
+        with:
+          config_file: mkdocs.yml
+          requirements_file: requirements.txt

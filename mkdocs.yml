@@ -1,0 +1,132 @@
+site_name: mkdocs-deploy
+site_url: https://joshooaj.github.io/mkdocs-deploy
+site_description: "GitHub Action to publish GitHub Pages using MkDocs"
+docs_dir: docs
+remote_branch: gh-pages
+repo_name: joshooaj/mkdocs-deploy
+repo_url: https://github.com/joshooaj/mkdocs-deploy
+edit_uri: blob/main/docs/
+copyright: Copyright &copy; 2023 Joshua J Hendricks. All rights reserved.
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  logo: assets/images/joshooaj.png
+  icon:
+    repo: fontawesome/brands/github
+  font:
+    text: Open Sans
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  features:
+    - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
+    - navigation.expand
+    - navigation.footer
+    - navigation.instant
+    - navigation.path
+    - navigation.prune
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - toc.follow
+
+plugins:
+  search: {}
+  awesome-pages:
+    strict: true
+    collapse_single_pages: true
+  git-revision-date-localized:
+    enabled: false
+    enable_creation_date: true
+  glightbox:
+    touchNavigation: true
+    loop: false
+    effect: zoom
+    slide_effect: slide
+    width: 100%
+    height: auto
+    zoomable: true
+    draggable: true
+    auto_caption: false
+    caption_position: bottom
+  tags:
+    tags_slugify: !!python/object/apply:pymdownx.slugs.slugify
+          kwds:
+            case: lower
+  blog:
+    blog_toc: true
+    post_slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+    categories_slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  rss:
+    image: assets/images/milestonelogo.png
+    match_path: blog/posts/.*
+    date_from_meta:
+      as_creation: date
+    categories:
+      - categories
+      - tags
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/joshooaj
+      name: Josh on GitHub
+    - icon: fontawesome/brands/mastodon
+      link: https://mastodon.social/@joshooaj
+      name: Josh on Mastodon
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/joshooaj
+      name: Josh on Twitter
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/joshooaj
+      name: Josh on LinkedIn
+
+
+markdown_extensions:
+  - attr_list
+  - admonition
+  - meta
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      linenums_style: pymdownx-inline
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.snippets:
+      base_path:
+        - docs
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+
+nav:
+  - index.md

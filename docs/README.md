@@ -4,221 +4,115 @@
 ![CI](https://github.com/actions/typescript-action/actions/workflows/ci.yml/badge.svg)
 [![Check dist/](https://github.com/actions/typescript-action/actions/workflows/check-dist.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/check-dist.yml)
 [![CodeQL](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml)
-[![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
 
-Use this template to bootstrap the creation of a TypeScript action. :rocket:
+This action converts your markdown content to a static website and publishes it
+to GitHub Pages using [mkdocs](https://www.mkdocs.org/) by:
 
-This template includes compilation support, tests, a validation workflow,
-publishing, and versioning guidance.
-
-If you are new, there's also a simpler introduction in the
-[Hello world JavaScript action repository](https://github.com/actions/hello-world-javascript-action).
-
-## Create Your Own Action
-
-To create your own action, you can use this repository as a template! Just
-follow the below instructions:
-
-1. Click the **Use this template** button at the top of the repository
-1. Select **Create a new repository**
-1. Select an owner and name for your new repository
-1. Click **Create repository**
-1. Clone your new repository
-
-## Initial Setup
-
-After you've cloned the repository to your local machine or codespace, you'll
-need to perform some initial setup steps before you can develop your action.
-
-> [!NOTE]
->
-> You'll need to have a reasonably modern version of
-> [Node.js](https://nodejs.org) handy (20.x or later should work!). If you are
-> using a version manager like [`nodenv`](https://github.com/nodenv/nodenv) or
-> [`nvm`](https://github.com/nvm-sh/nvm), this template has a `.node-version`
-> file at the root of the repository that will be used to automatically switch
-> to the correct version when you `cd` into the repository. Additionally, this
-> `.node-version` file is used by GitHub Actions in any `actions/setup-node`
-> actions.
-
-1. :hammer_and_wrench: Install the dependencies
-
-   ```bash
-   npm install
-   ```
-
-1. :building_construction: Package the TypeScript for distribution
-
-   ```bash
-   npm run bundle
-   ```
-
-1. :white_check_mark: Run the tests
-
-   ```bash
-   $ npm test
-
-   PASS  ./index.test.js
-     ✓ throws invalid number (3ms)
-     ✓ wait 500 ms (504ms)
-     ✓ test runs (95ms)
-
-   ...
-   ```
-
-## Update the Action Metadata
-
-The [`action.yml`](action.yml) file defines metadata about your action, such as
-input(s) and output(s). For details about this file, see
-[Metadata syntax for GitHub Actions](https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions).
-
-When you copy this repository, update `action.yml` with the name, description,
-inputs, and outputs for your action.
-
-## Update the Action Code
-
-The [`src/`](./src/) directory is the heart of your action! This contains the
-source code that will be run when your action is invoked. You can replace the
-contents of this directory with your own code.
-
-There are a few things to keep in mind when writing your action code:
-
-- Most GitHub Actions toolkit and CI/CD operations are processed asynchronously.
-  In `main.ts`, you will see that the action is run in an `async` function.
-
-  ```javascript
-  import * as core from '@actions/core'
-  //...
-
-  async function run() {
-    try {
-      //...
-    } catch (error) {
-      core.setFailed(error.message)
-    }
-  }
-  ```
-
-  For more information about the GitHub Actions toolkit, see the
-  [documentation](https://github.com/actions/toolkit/blob/master/README.md).
-
-So, what are you waiting for? Go ahead and start customizing your action!
-
-1. Create a new branch
-
-   ```bash
-   git checkout -b releases/v1
-   ```
-
-1. Replace the contents of `src/` with your action code
-1. Add tests to `__tests__/` for your source code
-1. Format, test, and build the action
-
-   ```bash
-   npm run all
-   ```
-
-   > [!WARNING]
-   >
-   > This step is important! It will run [`ncc`](https://github.com/vercel/ncc)
-   > to build the final JavaScript action code with all dependencies included.
-   > If you do not run this step, your action will not work correctly when it is
-   > used in a workflow. This step also includes the `--license` option for
-   > `ncc`, which will create a license file for all of the production node
-   > modules used in your project.
-
-1. Commit your changes
-
-   ```bash
-   git add .
-   git commit -m "My first action is ready!"
-   ```
-
-1. Push them to your repository
-
-   ```bash
-   git push -u origin releases/v1
-   ```
-
-1. Create a pull request and get feedback on your action
-1. Merge the pull request into the `main` branch
-
-Your action is now published! :rocket:
-
-For information about versioning your action, see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-in the GitHub Actions toolkit.
-
-## Validate the Action
-
-You can now validate the action by referencing it in a workflow file. For
-example, [`ci.yml`](./.github/workflows/ci.yml) demonstrates how to reference an
-action in the same repository.
-
-```yaml
-steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v4
-
-  - name: Test Local Action
-    id: test-action
-    uses: ./
-    with:
-      milliseconds: 1000
-
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.test-action.outputs.time }}"
-```
-
-For example workflow runs, check out the
-[Actions tab](https://github.com/actions/typescript-action/actions)! :rocket:
+- building a simple `mkdocs.yml` at run-time unless you bring your own
+- installing mkdocs, and the specified theme, or your own requirements based on
+  the contents `requirements_file` for example
+- executing `mkdocs gh-deploy` to build a static site from the contents of
+  `docs_dir`, and pushing the site to `remote_branch` on your repository.
 
 ## Usage
 
-After testing, you can create version tag(s) that developers can use to
-reference different stable versions of your action. For more information, see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-in the GitHub Actions toolkit.
+See [action.yml](action.yml)
 
-To include the action in a workflow in another repository, you can use the
-`uses` syntax with the `@` symbol to reference a specific branch, tag, or commit
-hash.
+### Basic
+
+Ensure your GitHub repository has a `docs/` directory at the root with at least
+an `index.md` or `readme.md` file in it, and add the `mkdocs-deploy` action to
+your workflow.
 
 ```yaml
 steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v4
-
-  - name: Test Local Action
-    id: test-action
-    uses: actions/typescript-action@v1 # Commit with the `v1` tag
-    with:
-      milliseconds: 1000
-
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.test-action.outputs.time }}"
+- uses: actions/checkout@v4
+- uses: joshooaj/mkdocs-deploy@v1
 ```
 
-## Publishing a new release
+An `mkdocs.yml` file will be generated at runtime with some values determined
+based on the workflow context. For example, here is what the default mkdocs
+configuration looks like for this repository:
 
-This project includes a helper script designed to streamline the process of
-tagging and pushing new releases for GitHub Actions.
+```yaml
+site_name: mkdocs-deploy
+site_description: ''
+site_url: https://joshooaj.github.io/mkdocs-deploy/
+docs_dir: docs
+repo_name: joshooaj/mkdocs-deploy
+repo_url: https://joshooaj.github.io/mkdocs-deploy/
+remote_branch: gh-pages
+theme:
+  name: material
+```
 
-GitHub Actions allows users to select a specific version of the action to use,
-based on release tags. Our script simplifies this process by performing the
-following steps:
+### Using inputs
 
-1. **Retrieving the latest release tag:** The script starts by fetching the most
-   recent release tag by looking at the local data available in your repository.
-1. **Prompting for a new release tag:** The user is then prompted to enter a new
-   release tag. To assist with this, the script displays the latest release tag
-   and provides a regular expression to validate the format of the new tag.
-1. **Tagging the new release:** Once a valid new tag is entered, the script tags
-   the new release.
-1. **Pushing the new tag to the remote:** Finally, the script pushes the new tag
-   to the remote repository. From here, you will need to create a new release in
-   GitHub and users can easily reference the new tag in their workflows.
+You can customize your site using the available inputs, and even provide your
+own `mkdocs.yml` configuration file and `requirements.txt` file.
+
+```yaml
+- uses: joshooaj/mkdocs-deploy@v1
+  with:
+    # Optional: The name of your own mkdocs configuration file (usually mkdocs.yml).
+    # When provided, most other inputs will be ignored.
+    config_file: ''
+
+    # Optional: The name of your own Python requirements file. If provided, it
+    # should include all Python packages required by your mkdocs configuration
+    # including "mkdocs" and your chosen theme. The command "pip install -r <requirements_file>"
+    # will be executed.
+    requirements_file: ''
+    
+    # Optional: The name or title of the mkdocs site. If value is not specified,
+    # the site name will match the repository name from the github context.
+    # Ignored if "config_file" is specified.
+    site_name: ''
+    
+    # Optional: The URL of the published mkdocs site. If value is not specified,
+    # the URL is generated from the github context with the pattern "https://<owner>.github.io/<repo>".
+    # Ignored if "config_file" is specified.
+    site_url: ''
+
+    # Optional: Name of the GitHub repository associated with the mkdocs site.
+    # If value is not specified, the value is retrieved from the github context.
+    # Ignored if "config_file" is specified.
+    repo_name: ''
+    
+    # Optional: The directory representing the root of your site. The default
+    # value is "docs".
+    # Ignored if "config_file" is specified.
+    docs_dir: 'docs'
+
+    # Optional: Name of the branch on which to publish the mkdocs site. The
+    # default value is "gh-pages". Ignored if "config_file" is specified.
+    remote_branch: 'gh-pages'
+    
+    # Optional: Name of the mkdocs theme to use when generating the mkdocs site.
+    # The default value is "material". See https://squidfunk.github.io/mkdocs-material/
+    # for detailed information on the features available with this theme. For
+    # other available themes, see https://github.com/mkdocs/catalog/ and specifically
+    # be sure to use the value of "mkdocs_theme" for the theme of your choice which
+    # is found in https://github.com/mkdocs/catalog/blob/main/projects.yaml.
+    # Ignored if "config_file" is specified.
+    theme: 'material'
+
+    # Optional: Set the value to "false" when you want to execute "mkdocs build"
+    # instead of "mkdocs gh-deploy". This can be useful to validate that your
+    # site builds successfully without pushing to GitHub Pages, or to build a
+    # site to deploy to a different static website host in a later step such as
+    # Netlify or Azure Static Web Apps.
+    deploy: true
+```
+
+## License
+
+The scripts and documentation in this project are released under the [MIT License](LICENSE)
+
+## Contributions
+
+Contributions are welcome! See [Contributor's Guide](docs/contributors.md)
+
+## Code of Conduct
+
+:wave: Be nice. See [our code of conduct](CODE_OF_CONDUCT.md)
