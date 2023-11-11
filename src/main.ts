@@ -4,7 +4,6 @@ import yaml from 'js-yaml'
 import fs from 'fs'
 import { exec, ExecOptions } from '@actions/exec'
 import { getMkDocsProjects } from './mkdocs-projects'
-import { builtinModules } from 'module'
 
 /**
  * The main function for the action.
