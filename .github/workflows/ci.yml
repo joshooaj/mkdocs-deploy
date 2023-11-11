@@ -7,6 +7,19 @@ on:
     branches:
       - main
       - 'releases/*'
+    paths:
+      - __tests__/**
+      - .github/workflows/ci.yml
+      - dist/**
+      - docs/**
+      - src/**
+      - .node-version
+      - .prettier*
+      - action.yml
+      - mkdocs.yml
+      - package*.json
+      - requirements.txt
+      - tsconfig.json
 
 jobs:
   test-typescript:

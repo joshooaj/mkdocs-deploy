@@ -9,7 +9,6 @@ on:
         - mkdocs.yml
         - requirements.yml
         - docs/**
-        - overrides/**
 
 permissions:
   contents: write
@@ -22,6 +21,12 @@ jobs:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        id: setup
+        with:
+          python-version: '3.10'
+          cache: 'pip'
 
       - name: Publish to GitHub Pages
         uses: ./

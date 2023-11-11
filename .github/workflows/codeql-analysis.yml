@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - .github/workflows/check-dist.yml
+      - dist/**
+      - src/**
+      - .node-version
+      - package*.json
+      - tsconfig.json
   pull_request:
     branches:
       - main
