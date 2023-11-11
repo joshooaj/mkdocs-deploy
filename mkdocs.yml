@@ -6,7 +6,7 @@ remote_branch: gh-pages
 repo_name: joshooaj/mkdocs-deploy
 repo_url: https://github.com/joshooaj/mkdocs-deploy
 edit_uri: blob/main/docs/
-copyright: Copyright &copy; 2023 Joshua J Hendricks. All rights reserved.
+copyright: Copyright &copy; 2023 Joshua James Hendricks. All rights reserved.
 
 theme:
   name: material
