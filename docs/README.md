@@ -109,10 +109,6 @@ own `mkdocs.yml` configuration file and `requirements.txt` file.
 
 The scripts and documentation in this project are released under the [MIT License](https://github.com/joshooaj/mkdocs-deploy/blob/main/LICENSE)
 
-## Contributions
-
-Contributions are welcome! See [Contributor's Guide](https://github.com/joshooaj/mkdocs-deploy/blob/main/contributors.md)
-
 ## Code of Conduct
 
 :wave: Be nice. See [our code of conduct](https://github.com/joshooaj/mkdocs-deploy/blob/main/CODE_OF_CONDUCT.md)
