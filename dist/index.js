@@ -35292,6 +35292,7 @@ async function run() {
         }
         core.debug(`Contents of mkdocs.yml:\n${js_yaml_1.default.dump(config)}`);
         // Install requirements
+        await pipInstallPackages(['mkdocs']);
         const requirementsFile = core.getInput('requirements_file');
         if (requirementsFile) {
             core.debug(`Installing dependencies from file "${requirementsFile}"`);
@@ -35313,8 +35314,12 @@ async function run() {
                 }
             }
         }
-        await deploy(configFile);
-        core.setOutput('mkdocs-config', js_yaml_1.default.dump(config));
+        if (core.getInput('deploy').toLowerCase() === 'true') {
+            await deploy(configFile);
+        }
+        else {
+            await build(configFile);
+        }
     }
     catch (error) {
         if (error instanceof Error)
@@ -35387,6 +35392,22 @@ async function deploy(configFile) {
         ignoreReturnCode: false
     };
     const args = ['gh-deploy', '--config-file', configFile];
+    await (0, exec_1.exec)('mkdocs', args, options);
+}
+async function build(configFile) {
+    const options = {
+        listeners: {
+            stdout: (data) => {
+                core.info(data.toString());
+            },
+            stderr: (data) => {
+                core.warning(data.toString());
+            }
+        },
+        silent: false,
+        ignoreReturnCode: false
+    };
+    const args = ['build', '--config-file', configFile];
     await (0, exec_1.exec)('mkdocs', args, options);
 }
 

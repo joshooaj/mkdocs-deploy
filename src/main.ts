@@ -28,7 +28,7 @@ export async function run(): Promise<void> {
     core.debug(`Contents of mkdocs.yml:\n${yaml.dump(config)}`)
 
     // Install requirements
-    await pipInstallPackages('mkdocs')
+    await pipInstallPackages(['mkdocs'])
     const requirementsFile = core.getInput('requirements_file')
     if (requirementsFile) {
       core.debug(`Installing dependencies from file "${requirementsFile}"`)
