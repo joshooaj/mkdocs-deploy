@@ -35271,6 +35271,59 @@ const yaml = __importStar(__nccwpck_require__(1917));
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 const exec_1 = __nccwpck_require__(1514);
 const mkdocs_projects_1 = __nccwpck_require__(3540);
+class CustomTag {
+    type;
+    data;
+    constructor(type, data) {
+        this.type = type;
+        this.data = data;
+    }
+}
+const tags = [
+    new yaml.Type('!', {
+        kind: 'scalar',
+        multi: true,
+        representName: (obj) => {
+            obj.type;
+        },
+        represent: (obj) => {
+            obj.data;
+        },
+        instanceOf: CustomTag,
+        construct: (data, type) => {
+            return new CustomTag(type, data);
+        }
+    }),
+    new yaml.Type('!', {
+        kind: 'sequence',
+        multi: true,
+        representName: (obj) => {
+            obj.type;
+        },
+        represent: (obj) => {
+            obj.data;
+        },
+        instanceOf: CustomTag,
+        construct: (data, type) => {
+            return new CustomTag(type, data);
+        }
+    }),
+    new yaml.Type('!', {
+        kind: 'mapping',
+        multi: true,
+        representName: (obj) => {
+            obj.type;
+        },
+        represent: (obj) => {
+            obj.data;
+        },
+        instanceOf: CustomTag,
+        construct: (data, type) => {
+            return new CustomTag(type, data);
+        }
+    })
+];
+const YAML_SCHEMA = yaml.DEFAULT_SCHEMA.extend(tags);
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -35283,7 +35336,7 @@ async function run() {
         if (configFile) {
             core.debug(`Loading mkdocs configuration file: ${configFile}`);
             config = yaml.load(fs_1.default.readFileSync(configFile, 'utf8'), {
-                schema: yaml.FAILSAFE_SCHEMA
+                schema: YAML_SCHEMA
             });
             yaml.load;
         }
