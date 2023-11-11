@@ -43,7 +43,6 @@ jobs:
 
   mkdocs-build:
     name: Test mkdocs build
-    needs: test-typescript
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -52,6 +51,16 @@ jobs:
         config_file: ['mkdocs.yml', '']
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        id: setup
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+      - name: Log cache hit
+        shell: bash
+        run: |
+          echo "python-version ${{ steps.setup.outputs.python-version }}"
+          echo "cache-hit ${{ steps.setup.outputs.cache-hit }}"
       - name: Run action on ${{ matrix.os }}
         uses: ./
         with:
