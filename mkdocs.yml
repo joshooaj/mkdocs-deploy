@@ -43,6 +43,7 @@ theme:
 
 plugins:
   search: {}
+  glightbox:
     touchNavigation: true
     loop: false
     effect: zoom
@@ -101,4 +102,4 @@ markdown_extensions:
       permalink: true
 
 nav:
-  - index.md
+  - README.md

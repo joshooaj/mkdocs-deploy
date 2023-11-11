@@ -16,7 +16,7 @@ to GitHub Pages using [mkdocs](https://www.mkdocs.org/) by:
 
 ## Usage
 
-See [action.yml](action.yml)
+See [action.yml](https://github.com/joshooaj/mkdocs-deploy/blob/main/action.yml)
 
 ### Basic
 
@@ -107,12 +107,12 @@ own `mkdocs.yml` configuration file and `requirements.txt` file.
 
 ## License
 
-The scripts and documentation in this project are released under the [MIT License](LICENSE)
+The scripts and documentation in this project are released under the [MIT License](https://github.com/joshooaj/mkdocs-deploy/blob/main/LICENSE)
 
 ## Contributions
 
-Contributions are welcome! See [Contributor's Guide](docs/contributors.md)
+Contributions are welcome! See [Contributor's Guide](https://github.com/joshooaj/mkdocs-deploy/blob/main/contributors.md)
 
 ## Code of Conduct
 
-:wave: Be nice. See [our code of conduct](CODE_OF_CONDUCT.md)
+:wave: Be nice. See [our code of conduct](https://github.com/joshooaj/mkdocs-deploy/blob/main/CODE_OF_CONDUCT.md)
