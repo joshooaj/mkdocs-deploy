@@ -194,7 +194,7 @@ async function deploy(configFile: string): Promise<void> {
     silent: false,
     ignoreReturnCode: false
   }
-  const args = ['gh-deploy', '--config-file', configFile]
+  const args = ['gh-deploy', '--force', '--config-file', configFile]
   await exec('mkdocs', args, options)
 }
 

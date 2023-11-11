@@ -35446,7 +35446,7 @@ async function deploy(configFile) {
         silent: false,
         ignoreReturnCode: false
     };
-    const args = ['gh-deploy', '--config-file', configFile];
+    const args = ['gh-deploy', '--force', '--config-file', configFile];
     await (0, exec_1.exec)('mkdocs', args, options);
 }
 async function build(configFile) {
