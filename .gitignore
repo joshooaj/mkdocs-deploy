@@ -103,4 +103,4 @@ __tests__/runner/*
 *.code-workspace
 
 # mkdocs artifacts
-site/**
+site/
