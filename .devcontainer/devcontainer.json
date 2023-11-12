@@ -1,6 +1,8 @@
 {
 	"name": "Node.js & TypeScript",
-	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
 	"features": {
 	},
 	"customizations": {
@@ -8,8 +10,12 @@
 			"extensions": [
 				"dbaeumer.vscode-eslint",
 				"ms-vscode.vscode-typescript-next",
-				"github.vscode-github-actions"
+				"github.vscode-github-actions",
+				"christian-kohler.npm-intellisense",
+				"ms-vscode.powershell",
+				"ms-azuretools.vscode-docker"
 			]
 		}
-	}
+	},
+	"forwardPorts": [8000]
 }
